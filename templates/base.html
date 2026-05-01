@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Managiaa - Task & Project Management System">
+    <title>{% block title %}Managiaa{% endblock %}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='img/m main letter logo.png') }}">
+    <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet">
+    <script>
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme) {
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        } else if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+            document.documentElement.setAttribute('data-bs-theme', 'light');
+        } else {
+            document.documentElement.setAttribute('data-bs-theme', 'dark');
+        }
+    </script>
+    {% block head %}{% endblock %}
+</head>
+<body>
+{% if current_user %}
+<!-- Sidebar -->
+<nav id="sidebar" class="sidebar">
+    <div class="sidebar-brand">
+        <img src="{{ url_for('static', filename='img/m main letter logo.png') }}" alt="M" style="width: 32px; height: 32px; object-fit: contain;">
+        <img src="{{ url_for('static', filename='img/managiaa letters logo.png') }}" alt="Managiaa" style="height: 20px; object-fit: contain; margin-left: 8px;">
+    </div>
+    <ul class="sidebar-nav">
+        <div style="padding: 16px 16px 8px; font-size: 0.65rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1.5px;">WORKSPACE</div>
+        <li><a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span></a></li>
+        <li><a href="{{ url_for('task_list') }}" class="{% if 'task' in request.endpoint|default('') %}active{% endif %}"><i class="bi bi-check2-square"></i><span>Tasks</span></a></li>
+        <li><a href="{{ url_for('project_list') }}" class="{% if 'project' in request.endpoint|default('') %}active{% endif %}"><i class="bi bi-folder-fill"></i><span>Projects</span></a></li>
+        {% if current_user.role == 'admin' %}
+        <li><a href="{{ url_for('member_list') }}" class="{% if 'member' in request.endpoint|default('') %}active{% endif %}"><i class="bi bi-people-fill"></i><span>Members</span></a></li>
+        <li><a href="{{ url_for('audit_log_view') }}" class="{% if request.endpoint == 'audit_log_view' %}active{% endif %}"><i class="bi bi-journal-text"></i><span>Audit Log</span></a></li>
+        {% endif %}
+    </ul>
+    <div class="sidebar-footer">
+        <div class="glass-card p-3 d-flex align-items-center gap-3 w-100" style="border-radius: 12px; border-color: var(--border);">
+            <div style="width: 36px; height: 36px; border-radius: 50%; background: rgba(92, 75, 223, 0.2); color: var(--accent); display: flex; align-items: center; justify-content: center; font-weight: 700;">
+                {{ current_user.full_name[0]|upper }}
+            </div>
+            <div style="flex: 1; overflow: hidden;">
+                <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-primary); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{ current_user.full_name }}</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">{{ current_user.role }} PLAN</div>
+            </div>
+        </div>
+        <a href="{{ url_for('logout') }}" class="mt-3 text-secondary" style="font-weight: 600; font-size: 0.85rem;"><i class="bi bi-box-arrow-right"></i><span>Sign Out</span></a>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="main-content">
+    <header class="top-bar">
+        <button class="btn btn-link sidebar-toggle d-md-none" onclick="document.getElementById('sidebar').classList.toggle('show')">
+            <i class="bi bi-list fs-4"></i>
+        </button>
+        <div class="top-bar-title d-flex align-items-center gap-4">
+            <h1 style="margin:0;">{% block page_title %}Dashboard{% endblock %}</h1>
+            <div class="date-badge" style="background: var(--bg-card); border: 1px solid var(--border); padding: 6px 14px; border-radius: 8px; font-size: 0.7rem; color: var(--text-secondary); font-weight: 700; letter-spacing: 0.5px;">
+                <i class="bi bi-calendar3 me-1"></i> <span id="current-date-display">MAY 1, 2026</span>
+            </div>
+        </div>
+        <div class="top-bar-actions d-flex align-items-center gap-4">
+            <button class="btn btn-link text-secondary p-0 border-0 position-relative" title="Notifications">
+                <i class="bi bi-bell fs-5"></i>
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-accent border border-light rounded-circle" style="background-color: var(--accent);"></span>
+            </button>
+            <button id="theme-toggle" class="btn btn-link text-secondary p-0 border-0" title="Toggle Theme">
+                <i class="bi bi-moon-stars-fill fs-5"></i>
+            </button>
+            <a href="{{ url_for('task_create') }}" class="btn btn-accent rounded-pill px-4 py-2" style="font-size: 0.75rem; letter-spacing: 1px;"><i class="bi bi-plus-lg me-1"></i> CREATE</a>
+        </div>
+    </header>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show flash-msg" role="alert">
+            <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' if category == 'warning' else 'info-circle' if category == 'info' else 'x-circle' }}"></i>
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+
+    <div class="content-area">
+{% endif %}
+
+{% if not current_user %}
+    <!-- Auth Theme Toggle -->
+    <button id="auth-theme-toggle" class="btn btn-link text-secondary position-absolute top-0 end-0 m-3 border-0" title="Toggle Theme" style="z-index: 1000;">
+        <i class="bi bi-moon-stars-fill fs-5"></i>
+    </button>
+    
+    <!-- Auth flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="flash-container auth-flash">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show flash-msg" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endwith %}
+{% endif %}
+
+
+{% block content %}{% endblock %}
+
+{% if current_user %}
+    </div>
+</div>
+{% endif %}
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// Theme toggling
+const themeToggleBtn = document.getElementById('theme-toggle') || document.getElementById('auth-theme-toggle');
+if (themeToggleBtn) {
+    const updateIcon = () => {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const icon = themeToggleBtn.querySelector('i');
+        if (currentTheme === 'light') {
+            icon.className = 'bi bi-moon-stars-fill fs-5';
+        } else {
+            icon.className = 'bi bi-sun-fill fs-5 text-warning';
+        }
+    };
+    updateIcon();
+    themeToggleBtn.addEventListener('click', () => {
+        const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+        const newTheme = currentTheme === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-bs-theme', newTheme);
+        localStorage.setItem('theme', newTheme);
+        updateIcon();
+    });
+}
+
+// Auto-dismiss flash messages
+setTimeout(() => {
+    document.querySelectorAll('.flash-msg').forEach(el => {
+        el.style.transition = 'opacity 0.5s';
+        el.style.opacity = '0';
+        setTimeout(() => el.remove(), 500);
+    });
+}, 4000);
+
+// Date Display
+const dateDisplay = document.getElementById('current-date-display');
+if (dateDisplay) {
+    const options = { month: 'short', day: 'numeric', year: 'numeric' };
+    dateDisplay.textContent = new Date().toLocaleDateString('en-US', options).toUpperCase();
+}
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

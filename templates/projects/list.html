@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+{% block title %}Projects — Managiaa{% endblock %}
+{% block page_title %}Projects{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">{{ projects|length }} active project{{ 's' if projects|length != 1 }}</div>
+    {% if current_user.role == 'admin' %}
+    <a href="{{ url_for('project_create') }}" class="btn btn-accent rounded-pill px-4 py-2" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;"><i class="bi bi-plus-lg me-1"></i> CREATE</a>
+    {% endif %}
+</div>
+{% if projects %}
+<div class="row g-3">
+    {% for p in projects %}
+    <div class="col-md-6 col-lg-4">
+        <div class="glass-card" style="cursor:pointer; border-radius: 24px; padding: 28px; display: flex; flex-direction: column; justify-content: space-between; min-height: 200px;" onclick="location.href='{{ url_for('project_detail', project_id=p.id) }}'">
+            <div>
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <h5 style="font-weight: 800; color: var(--text-primary); margin: 0; font-size: 1.1rem;">{{ p.name }}</h5>
+                        {% set p_class = 'completed' if p.progress == 100 else ('medium' if p.progress > 0 else 'low') %}
+                        <div class="task-progress-bar {{ p_class }}" style="width: {{ p.progress }}%;"></div>
+                    </div>
+                    <span class="badge badge-status-{{ 'completed' if p.status=='completed' else 'in-progress' if p.status=='active' else 'pending' }}">{{ p.status|title }}</span>
+                </div>
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-bottom:24px;line-height:1.5;">{{ (p.description or 'No description provided')[:90] }}{{ '...' if p.description and p.description|length > 90 }}</p>
+            </div>
+            <div class="d-flex justify-content-between align-items-center" style="border-top: 1px solid var(--border); padding-top: 16px;">
+                <div style="font-size:0.75rem; color:var(--text-muted); font-weight:700; letter-spacing:0.5px;">
+                    {{ p.completed_tasks }}/{{ p.total_tasks }} TASKS
+                </div>
+                <div style="font-size:1.2rem; font-weight:800; color:var(--text-primary);">
+                    {{ p.progress }}<span style="font-size:0.8rem; color:var(--text-muted);">%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card empty-state">
+    <i class="bi bi-folder"></i>
+    <h4>No projects yet</h4>
+    {% if current_user.role == 'admin' %}<a href="{{ url_for('project_create') }}" class="btn btn-accent btn-sm mt-2">Create Project</a>{% endif %}
+</div>
+{% endif %}
+{% endblock %}

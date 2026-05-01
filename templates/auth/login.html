@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Login — Managiaa{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card">
+        <div class="auth-logo text-center">
+            <img src="{{ url_for('static', filename='img/full logo.png') }}" alt="Managiaa" style="max-width: 220px; margin-bottom: 20px;">
+            <p>Sign in to your workspace</p>
+        </div>
+        <form method="POST" action="{{ url_for('login') }}">
+            <div class="mb-3">
+                <label class="form-label" for="username">Username</label>
+                <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required autofocus>
+            </div>
+            <div class="mb-4">
+                <label class="form-label" for="password">Password</label>
+                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
+            </div>
+            <button type="submit" class="btn btn-accent w-100 mb-3">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            </button>
+        </form>
+        <p class="text-center mt-3" style="font-size:0.85rem;color:var(--text-muted);">
+            Don't have an account? <a href="{{ url_for('register') }}" style="color:var(--accent);">Register</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

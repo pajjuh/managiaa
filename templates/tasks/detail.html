@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block title %}{{ task.title }} — Managiaa{% endblock %}
+{% block page_title %}Task Detail{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <!-- Main Info -->
+    <div class="col-lg-8">
+        <div class="glass-card mb-4">
+            <div class="d-flex justify-content-between align-items-start mb-3">
+                <h4 style="font-weight:700;">{{ task.title }}</h4>
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('task_edit', task_id=task.id) }}" class="btn btn-ghost btn-sm"><i class="bi bi-pencil"></i> Edit</a>
+                    <form method="POST" action="{{ url_for('task_delete', task_id=task.id) }}" onsubmit="return confirm('Delete this task?')">
+                        <button class="btn btn-ghost btn-sm text-danger"><i class="bi bi-trash"></i></button>
+                    </form>
+                </div>
+            </div>
+            <div class="d-flex gap-2 mb-3">
+                <span class="badge badge-status-{{ task.status }}">{{ task.status|replace('-',' ')|title }}</span>
+                <span class="badge badge-priority-{{ task.priority }}">{{ task.priority|title }}</span>
+                {% if task.project_id %}<span class="badge" style="background:var(--glass);border:1px solid var(--border);">📁 {{ project_map.get(task.project_id, '') }}</span>{% endif %}
+            </div>
+            {% if task.description %}
+            <p style="color:var(--text-secondary);line-height:1.7;">{{ task.description }}</p>
+            {% endif %}
+            <div class="row mt-3" style="font-size:0.85rem;color:var(--text-muted);">
+                <div class="col-6"><strong>Assigned to:</strong> {{ user_map.get(task.assigned_to, {}).get('full_name', 'Unassigned') if user_map.get(task.assigned_to) else 'Unassigned' }}</div>
+                <div class="col-6"><strong>Due date:</strong> {{ task.due_date or 'Not set' }}</div>
+                <div class="col-6 mt-2"><strong>Created:</strong> {{ task.created_at[:10] if task.created_at else '' }}</div>
+                <div class="col-6 mt-2"><strong>Updated:</strong> {{ task.updated_at[:10] if task.updated_at else '' }}</div>
+            </div>
+            <!-- Quick Status -->
+            <div class="d-flex gap-2 mt-3 pt-3" style="border-top:1px solid var(--border);">
+                {% for s in ['pending','in-progress','completed'] %}
+                <form method="POST" action="{{ url_for('task_status_update', task_id=task.id) }}" class="d-inline">
+                    <input type="hidden" name="status" value="{{ s }}">
+                    <button class="btn {{ 'btn-accent' if task.status == s else 'btn-ghost' }} btn-sm">{{ s|replace('-',' ')|title }}</button>
+                </form>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Comments -->
+        <div class="glass-card">
+            <h6 style="font-weight:600;color:var(--text-secondary);margin-bottom:16px;"><i class="bi bi-chat-dots me-2"></i>Comments ({{ comments|length }})</h6>
+            {% for c in comments %}
+            {% set cu = user_map.get(c.user_id, {}) %}
+            <div class="comment-item {{ 'admin-comment' if cu.get('role') == 'admin' }}">
+                <div class="comment-meta">
+                    <strong style="color:var(--text-primary);">{{ cu.get('full_name', 'Unknown') }}</strong>
+                    {% if cu.get('role') == 'admin' %}<span class="badge bg-primary" style="font-size:0.6rem;margin-left:4px;">ADMIN</span>{% endif %}
+                    · {{ c.created_at[:16]|replace('T',' ') if c.created_at else '' }}
+                </div>
+                <p style="margin:0;color:var(--text-secondary);font-size:0.9rem;">{{ c.content }}</p>
+            </div>
+            {% endfor %}
+            {% if not comments %}
+            <p style="color:var(--text-muted);font-size:0.85rem;">No comments yet.</p>
+            {% endif %}
+            <form method="POST" action="{{ url_for('task_comment', task_id=task.id) }}" class="mt-3">
+                <div class="d-flex gap-2">
+                    <input type="text" class="form-control" name="content" placeholder="Add a comment..." required>
+                    <button class="btn btn-accent btn-sm" style="white-space:nowrap;"><i class="bi bi-send"></i></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Sidebar: Attachments -->
+    <div class="col-lg-4">
+        <div class="glass-card">
+            <h6 style="font-weight:600;color:var(--text-secondary);margin-bottom:16px;"><i class="bi bi-paperclip me-2"></i>Attachments ({{ attachments|length }})</h6>
+            {% for a in attachments %}
+            <div class="d-flex align-items-center gap-2 mb-2 p-2" style="background:var(--bg-primary);border-radius:var(--radius-sm);">
+                <i class="bi bi-file-earmark" style="color:var(--accent);"></i>
+                <a href="{{ url_for('download_file', filename=a.filepath) }}" style="color:var(--text-primary);font-size:0.85rem;text-decoration:none;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ a.filename }}</a>
+            </div>
+            {% endfor %}
+            {% if not attachments %}
+            <p style="color:var(--text-muted);font-size:0.85rem;">No files attached.</p>
+            {% endif %}
+            <form method="POST" action="{{ url_for('task_upload', task_id=task.id) }}" enctype="multipart/form-data" class="mt-3">
+                <input type="file" class="form-control form-control-sm mb-2" name="file" required>
+                <button class="btn btn-ghost btn-sm w-100"><i class="bi bi-upload me-1"></i>Upload File</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

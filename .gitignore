@@ -1,0 +1,13 @@
+.env
+__pycache__/
+*.pyc
+uploads/
+venv/
+.venv/
+*.db
+extract_text*.py
+logs_*.txt
+.gemini/
+*.docx
+.vscode/
+.idea/

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Members — Managiaa{% endblock %}
+{% block page_title %}Members{% endblock %}
+{% block content %}
+<div class="table-wrapper">
+    <div class="table-responsive">
+        <table class="table">
+            <thead><tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Tasks</th><th>Actions</th></tr></thead>
+            <tbody>
+            {% for u in users %}
+            <tr>
+                <td style="font-weight:500;">{{ u.full_name }}</td>
+                <td style="color:var(--text-muted);">@{{ u.username }}</td>
+                <td style="font-size:0.85rem;">{{ u.email }}</td>
+                <td><span class="badge bg-{{ 'primary' if u.role=='admin' else 'secondary' }}">{{ u.role|upper }}</span></td>
+                <td style="font-size:0.85rem;">{{ u.completed_tasks }}/{{ u.total_tasks }}</td>
+                <td>
+                    <form method="POST" action="{{ url_for('member_role', user_id=u.id) }}" class="d-inline">
+                        <select name="role" class="form-select form-select-sm d-inline-block" style="width:auto;" onchange="this.form.submit()">
+                            <option value="user" {{ 'selected' if u.role=='user' }}>User</option>
+                            <option value="admin" {{ 'selected' if u.role=='admin' }}>Admin</option>
+                        </select>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

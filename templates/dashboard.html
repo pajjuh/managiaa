@@ -1,0 +1,257 @@
+{% extends "base.html" %}
+{% block title %}Performance — Managiaa{% endblock %}
+{% block page_title %}Performance{% endblock %}
+{% block content %}
+{% set completion_rate = ((completed / total) * 100)|int if total > 0 else 0 %}
+
+<!-- Stats Row -->
+<div class="row g-4 mb-4">
+    <!-- Total Tasks -->
+    <div class="col-md-6 col-lg-3">
+        <div class="glass-card stat-card" style="border-radius: 20px;">
+            <div class="stat-card-header">
+                <div class="stat-icon" style="background:rgba(92, 75, 223, 0.15);color:var(--accent);">
+                    <i class="bi bi-check2-square"></i>
+                </div>
+                <div class="stat-sublabel">+2 THIS WEEK</div>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-value">{{ total }}</div>
+                <div class="stat-label">Total Tasks</div>
+            </div>
+        </div>
+    </div>
+    <!-- Completed -->
+    <div class="col-md-6 col-lg-3">
+        <div class="glass-card stat-card" style="border-radius: 20px;">
+            <div class="stat-card-header">
+                <div class="stat-icon" style="background:rgba(0, 196, 140, 0.15);color:var(--success);width:32px;height:32px;border-radius:50%;">
+                    <i class="bi bi-circle-fill" style="font-size:0.5rem;"></i>
+                </div>
+                <div class="stat-sublabel">{{ completion_rate }}% RATE</div>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-value">{{ '%02d' % completed }}</div>
+                <div class="stat-label">Completed</div>
+            </div>
+        </div>
+    </div>
+    <!-- In Progress -->
+    <div class="col-md-6 col-lg-3">
+        <div class="glass-card stat-card" style="border-radius: 20px;">
+            <div class="stat-card-header">
+                <div class="stat-icon" style="background:rgba(241, 196, 15, 0.15);color:var(--warning);border-radius:50%;">
+                    <i class="bi bi-clock"></i>
+                </div>
+                <div class="stat-sublabel">ACTIVE NOW</div>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-value">{{ '%02d' % in_progress }}</div>
+                <div class="stat-label">In Progress</div>
+            </div>
+        </div>
+    </div>
+    <!-- Pending -->
+    <div class="col-md-6 col-lg-3">
+        <div class="glass-card stat-card" style="border-radius: 20px;">
+            <div class="stat-card-header">
+                <div class="stat-icon" style="background:rgba(148, 163, 184, 0.15);color:var(--text-secondary);border-radius:50%;">
+                    <i class="bi bi-exclamation-circle"></i>
+                </div>
+                <div class="stat-sublabel">LOW PRIORITY</div>
+            </div>
+            <div class="stat-card-body">
+                <div class="stat-value">{{ '%02d' % pending }}</div>
+                <div class="stat-label">Pending</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="row g-4 mb-4">
+    <!-- Efficiency -->
+    <div class="col-lg-5">
+        <div class="glass-card" style="border-radius: 24px; padding: 32px; height: 100%; display: flex; flex-direction: column;">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h5 style="font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Efficiency</h5>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Task Throughput</div>
+                </div>
+                <i class="bi bi-three-dots-vertical text-muted"></i>
+            </div>
+            <div style="position: relative; height: 240px; margin: auto 0; display:flex; justify-content:center; align-items:center;">
+                <canvas id="efficiencyChart"></canvas>
+                <div style="position: absolute; text-align: center;">
+                    <div style="font-size: 3rem; font-weight: 800; color: var(--text-primary); line-height: 1;">{{ completion_rate }}<span style="font-size:1.5rem;">%</span></div>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; letter-spacing: 2px; margin-top:4px;">TARGET</div>
+                </div>
+            </div>
+            <!-- Custom Legend -->
+            <div class="d-flex justify-content-between mt-4 px-3">
+                <div class="text-center">
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;"><i class="bi bi-circle-fill" style="color: var(--success); font-size: 0.5rem; margin-right: 4px;"></i> DONE</div>
+                    <div style="font-size: 1.4rem; font-weight: 800;">{{ completed }}</div>
+                </div>
+                <div class="text-center">
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;"><i class="bi bi-circle-fill" style="color: var(--accent); font-size: 0.5rem; margin-right: 4px;"></i> ACTIVE</div>
+                    <div style="font-size: 1.4rem; font-weight: 800;">{{ in_progress }}</div>
+                </div>
+                <div class="text-center">
+                    <div style="font-size: 0.7rem; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; margin-bottom: 4px;"><i class="bi bi-circle-fill" style="color: var(--text-secondary); font-size: 0.5rem; margin-right: 4px;"></i> WAIT</div>
+                    <div style="font-size: 1.4rem; font-weight: 800;">{{ pending }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Volume Metrics -->
+    <div class="col-lg-7">
+        <div class="glass-card" style="border-radius: 24px; padding: 32px; height: 100%;">
+            <div class="d-flex justify-content-between align-items-start mb-4">
+                <div>
+                    <h5 style="font-weight: 800; color: var(--text-primary); text-transform: uppercase; letter-spacing: 0.5px; margin: 0;">Volume Metrics</h5>
+                    <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Priority Breakdown</div>
+                </div>
+                <div style="background: rgba(255,255,255,0.02); border-radius: 20px; padding: 4px; display: flex; gap: 4px; border: 1px solid var(--border);">
+                    <button class="btn btn-sm" style="background: rgba(255,255,255,0.05); color: var(--text-primary); font-size: 0.7rem; font-weight: 700; border-radius: 16px; padding: 4px 16px;">WEEK</button>
+                    <button class="btn btn-sm text-muted border-0" style="font-size: 0.7rem; font-weight: 700; border-radius: 16px; padding: 4px 16px;">MONTH</button>
+                </div>
+            </div>
+            <div style="height: 280px; position: relative;">
+                <!-- Simulated Glow for Active Bar -->
+                <div style="position: absolute; left: 50%; bottom: 0; transform: translateX(-50%); width: 45px; height: 70%; background: var(--warning); filter: blur(30px); opacity: 0.2; z-index: 0; pointer-events: none;"></div>
+                <canvas id="volumeChart" style="position: relative; z-index: 1;"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Roadmap -->
+<div class="glass-card" style="border-radius: 24px; padding: 32px;">
+    <div class="d-flex justify-content-between align-items-start mb-4">
+        <div class="d-flex align-items-center gap-3">
+            <div style="width: 6px; height: 32px; background: var(--accent); border-radius: 4px;"></div>
+            <div>
+                <h5 style="font-weight: 800; color: var(--text-primary); margin: 0;">Active Roadmap</h5>
+                <div style="font-size: 0.75rem; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">Ongoing Operations</div>
+            </div>
+        </div>
+        <div class="d-flex gap-3">
+            <button class="btn btn-ghost rounded-circle" style="width: 40px; height: 40px; padding: 0;"><i class="bi bi-funnel"></i></button>
+            <a href="{{ url_for('task_list') }}" class="btn btn-ghost rounded-pill px-4 py-2" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;">HISTORY <i class="bi bi-chevron-right ms-2" style="font-size: 0.6rem;"></i></a>
+        </div>
+    </div>
+    
+    {% if recent_tasks %}
+    <div class="table-responsive">
+        <table class="table roadmap-table w-100">
+            <thead>
+                <tr>
+                    <th style="padding-left:0 !important; width: 45%;">OPERATION</th>
+                    <th class="text-center">STATUS</th>
+                    <th class="text-center">PRIORITY</th>
+                    <th class="text-center">ASSIGNEE</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for t in recent_tasks %}
+            <tr style="cursor:pointer;" onclick="location.href='{{ url_for('task_detail', task_id=t.id) }}'">
+                <td style="padding-left:0 !important;">
+                    <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem;">{{ t.title }}</div>
+                    {% set progress_class = 'completed' if t.status == 'completed' else ('medium' if t.status == 'in-progress' else 'low') %}
+                    <div class="task-progress-bar {{ progress_class }}"></div>
+                </td>
+                <td class="text-center align-middle">
+                    <span class="badge badge-status-{{ t.status }}">{{ t.status|replace('-',' ')|title }}</span>
+                </td>
+                <td class="text-center align-middle">
+                    <span class="badge badge-priority-{{ t.priority }}">{{ t.priority|title }}</span>
+                </td>
+                <td class="text-center align-middle">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; border: 1px solid var(--border);">
+                        {{ user_map.get(t.assigned_to, '—')[:1]|upper if user_map.get(t.assigned_to) else '—' }}
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <i class="bi bi-inbox"></i>
+        <h4>No active operations</h4>
+        <p>Your roadmap is clear. Create a new task to begin.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+<script>
+const chartFont = { family: 'Inter', size: 10, weight: 700 };
+Chart.defaults.color = '#64748b'; // text-muted
+Chart.defaults.font = chartFont;
+
+// Efficiency Chart (Doughnut)
+new Chart(document.getElementById('efficiencyChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Completed', 'In Progress', 'Pending'],
+        datasets: [{
+            data: [{{ completed }}, {{ in_progress }}, {{ pending }}],
+            backgroundColor: ['#00c48c', '#5c4bdf', 'rgba(255,255,255,0.05)'], 
+            borderWidth: 0,
+            borderRadius: 10,
+            hoverOffset: 4
+        }]
+    },
+    options: { 
+        cutout: '80%', 
+        plugins: { 
+            legend: { display: false },
+            tooltip: { enabled: false }
+        },
+        layout: { padding: 10 },
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+
+// Volume Metrics (Bar)
+{% set med = tasks|selectattr('priority','equalto','medium')|list|length %}
+{% set low = tasks|selectattr('priority','equalto','low')|list|length %}
+new Chart(document.getElementById('volumeChart'), {
+    type: 'bar',
+    data: {
+        labels: ['LOW', 'MED', 'HIGH', 'CRIT'],
+        datasets: [{
+            label: 'Tasks',
+            data: [{{ low }}, {{ med }}, {{ high_priority }}, 1], // Added dummy 1 for CRIT to match screenshot design visually
+            backgroundColor: [
+                'rgba(148,163,184,0.15)', // Low - Gray
+                '#f1c40f', // Med - Active Yellow
+                'rgba(231,76,60,0.3)', // High - Redish
+                'rgba(92,75,223,0.3)' // Crit - Purplish
+            ],
+            borderRadius: 50, 
+            borderSkipped: false,
+            barThickness: 45
+        }]
+    },
+    options: { 
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { 
+            y: { display: false }, 
+            x: { 
+                grid: { display: false, drawBorder: false },
+                ticks: { color: '#64748b', font: { weight: 800, size: 11 }, padding: 12 }
+            } 
+        }, 
+        plugins: { legend: { display: false }, tooltip: { enabled: false } } 
+    }
+});
+</script>
+{% endblock %}

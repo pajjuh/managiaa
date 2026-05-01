@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Task' if editing else 'New Task' }} — Managiaa{% endblock %}
+{% block page_title %}{{ 'Edit Task' if editing else 'Create Task' }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="glass-card">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label" for="title">Task Title *</label>
+                    <input type="text" class="form-control" id="title" name="title" value="{{ task.title if task else '' }}" required placeholder="Enter task title">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label" for="description">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="4" placeholder="Describe the task...">{{ task.description if task else '' }}</textarea>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="project_id">Project</label>
+                        <select class="form-select" id="project_id" name="project_id">
+                            <option value="">No Project</option>
+                            {% for p in projects %}
+                            <option value="{{ p.id }}" {{ 'selected' if task and task.project_id == p.id }}>{{ p.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label" for="assigned_to">Assign To</label>
+                        <select class="form-select" id="assigned_to" name="assigned_to">
+                            <option value="">Unassigned</option>
+                            {% for u in users %}
+                            <option value="{{ u.id }}" {{ 'selected' if task and task.assigned_to == u.id }}>{{ u.full_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="row g-3">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label" for="priority">Priority</label>
+                        <select class="form-select" id="priority" name="priority">
+                            <option value="low" {{ 'selected' if task and task.priority == 'low' }}>Low</option>
+                            <option value="medium" {{ 'selected' if (not task) or (task and task.priority == 'medium') }}>Medium</option>
+                            <option value="high" {{ 'selected' if task and task.priority == 'high' }}>High</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label" for="status">Status</label>
+                        <select class="form-select" id="status" name="status">
+                            <option value="pending" {{ 'selected' if (not task) or (task and task.status == 'pending') }}>Pending</option>
+                            <option value="in-progress" {{ 'selected' if task and task.status == 'in-progress' }}>In Progress</option>
+                            <option value="completed" {{ 'selected' if task and task.status == 'completed' }}>Completed</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label" for="due_date">Due Date</label>
+                        <input type="date" class="form-control" id="due_date" name="due_date" value="{{ task.due_date if task and task.due_date else '' }}">
+                    </div>
+                </div>
+                <div class="d-flex gap-2 mt-2">
+                    <button type="submit" class="btn btn-accent"><i class="bi bi-check-lg me-1"></i>{{ 'Update' if editing else 'Create' }} Task</button>
+                    <a href="{{ url_for('task_list') }}" class="btn btn-ghost">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

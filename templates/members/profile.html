@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Profile — Managiaa{% endblock %}
+{% block page_title %}My Profile{% endblock %}
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="glass-card">
+            <div class="text-center mb-4">
+                <i class="bi bi-person-circle" style="font-size:4rem;color:var(--accent);"></i>
+                <h5 class="mt-2" style="font-weight:700;">{{ user.full_name }}</h5>
+                <span class="badge bg-{{ 'primary' if user.role=='admin' else 'secondary' }}">{{ user.role|upper }}</span>
+                <p style="color:var(--text-muted);font-size:0.85rem;margin-top:8px;">@{{ user.username }} · {{ user.email }}</p>
+            </div>
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Full Name</label>
+                    <input type="text" class="form-control" name="full_name" value="{{ user.full_name }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" name="email" value="{{ user.email }}">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">New Password <small style="color:var(--text-muted);">(leave blank to keep)</small></label>
+                    <input type="password" class="form-control" name="new_password" placeholder="Min 4 chars" minlength="4">
+                </div>
+                <button type="submit" class="btn btn-accent w-100"><i class="bi bi-check-lg me-1"></i>Update Profile</button>
+            </form>
+        </div>
+    </div>
+    <div class="col-lg-7">
+        <div class="glass-card">
+            <h6 style="font-weight:600;color:var(--text-secondary);margin-bottom:16px;">My Recent Tasks</h6>
+            {% if my_tasks %}
+            <div class="table-responsive">
+                <table class="table">
+                    <thead><tr><th>Title</th><th>Status</th><th>Priority</th><th>Due</th></tr></thead>
+                    <tbody>
+                    {% for t in my_tasks[:10] %}
+                    <tr onclick="location.href='{{ url_for('task_detail', task_id=t.id) }}'" style="cursor:pointer;">
+                        <td style="font-weight:500;">{{ t.title }}</td>
+                        <td><span class="badge badge-status-{{ t.status }}">{{ t.status|replace('-',' ')|title }}</span></td>
+                        <td><span class="badge badge-priority-{{ t.priority }}">{{ t.priority|title }}</span></td>
+                        <td style="font-size:0.85rem;">{{ t.due_date or '—' }}</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p style="color:var(--text-muted);text-align:center;padding:20px;">No tasks assigned yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

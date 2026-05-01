@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% block title %}Tasks — Managiaa{% endblock %}
+{% block page_title %}Tasks{% endblock %}
+{% block content %}
+<!-- Filter Bar -->
+<form class="filter-bar" method="GET" action="{{ url_for('task_list') }}">
+    <input type="text" class="form-control" name="q" value="{{ search_q }}" placeholder="🔍 Search tasks...">
+    <select class="form-select" name="status" onchange="this.form.submit()">
+        <option value="">All Status</option>
+        <option value="pending" {{ 'selected' if status_filter=='pending' }}>Pending</option>
+        <option value="in-progress" {{ 'selected' if status_filter=='in-progress' }}>In Progress</option>
+        <option value="completed" {{ 'selected' if status_filter=='completed' }}>Completed</option>
+    </select>
+    <select class="form-select" name="priority" onchange="this.form.submit()">
+        <option value="">All Priority</option>
+        <option value="high" {{ 'selected' if priority_filter=='high' }}>High</option>
+        <option value="medium" {{ 'selected' if priority_filter=='medium' }}>Medium</option>
+        <option value="low" {{ 'selected' if priority_filter=='low' }}>Low</option>
+    </select>
+    <select class="form-select" name="project" onchange="this.form.submit()">
+        <option value="">All Projects</option>
+        {% for p in projects %}
+        <option value="{{ p.id }}" {{ 'selected' if project_filter==p.id|string }}>{{ p.name }}</option>
+        {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-ghost btn-sm"><i class="bi bi-search"></i></button>
+    {% if search_q or status_filter or priority_filter or project_filter %}
+    <a href="{{ url_for('task_list') }}" class="btn btn-ghost btn-sm"><i class="bi bi-x-lg"></i> Clear</a>
+    {% endif %}
+    <div class="ms-auto">
+        <a href="{{ url_for('task_create') }}" class="btn btn-accent rounded-pill px-4 py-2" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px;"><i class="bi bi-plus-lg me-1"></i> CREATE</a>
+    </div>
+</form>
+
+<!-- Task Table -->
+{% if tasks %}
+<div class="glass-card" style="border-radius: 24px; padding: 32px;">
+    <div class="table-responsive">
+        <table class="table roadmap-table w-100">
+            <thead>
+                <tr>
+                    <th style="padding-left:0 !important;">TASK TITLE</th>
+                    <th class="text-center">PROJECT</th>
+                    <th class="text-center">STATUS</th>
+                    <th class="text-center">PRIORITY</th>
+                    <th class="text-center">ASSIGNEE</th>
+                    <th class="text-center">DUE DATE</th>
+                    <th class="text-end" style="padding-right:0 !important;">ACTIONS</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for t in tasks %}
+            <tr style="cursor:pointer;" onclick="location.href='{{ url_for('task_detail', task_id=t.id) }}'">
+                <td style="padding-left:0 !important; max-width: 300px;">
+                    <div style="font-weight: 700; color: var(--text-primary); font-size: 0.95rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">{{ t.title }}</div>
+                    {% set progress_class = 'completed' if t.status == 'completed' else ('medium' if t.status == 'in-progress' else 'low') %}
+                    <div class="task-progress-bar {{ progress_class }}"></div>
+                </td>
+                <td class="text-center align-middle" style="color:var(--text-muted); font-size: 0.85rem; font-weight: 600;">
+                    {{ project_map.get(t.project_id, '—') }}
+                </td>
+                <td class="text-center align-middle">
+                    <span class="badge badge-status-{{ t.status }}">{{ t.status|replace('-',' ')|title }}</span>
+                </td>
+                <td class="text-center align-middle">
+                    <span class="badge badge-priority-{{ t.priority }}">{{ t.priority|title }}</span>
+                </td>
+                <td class="text-center align-middle">
+                    <div style="width: 32px; height: 32px; border-radius: 8px; background: rgba(255,255,255,0.05); color: var(--text-secondary); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.8rem; border: 1px solid var(--border);">
+                        {{ user_map.get(t.assigned_to, '—')[:1]|upper if user_map.get(t.assigned_to) else '—' }}
+                    </div>
+                </td>
+                <td class="text-center align-middle" style="font-size:0.85rem; font-weight: 600;">
+                    {% if t.due_date %}
+                        {% if t.due_date < now.strftime('%Y-%m-%d') and t.status != 'completed' %}
+                        <span style="color:var(--danger);">{{ t.due_date }} ⚠️</span>
+                        {% else %}
+                        <span style="color:var(--text-secondary);">{{ t.due_date }}</span>
+                        {% endif %}
+                    {% else %}<span style="color:var(--text-muted);">—</span>{% endif %}
+                </td>
+                <td class="text-end align-middle" style="padding-right:0 !important;">
+                    <div class="d-flex gap-1 justify-content-end" onclick="event.stopPropagation();">
+                        {% if t.status == 'pending' %}
+                        <form method="POST" action="{{ url_for('task_status_update', task_id=t.id) }}" class="d-inline">
+                            <input type="hidden" name="status" value="in-progress">
+                            <button class="btn btn-ghost btn-sm rounded-circle" title="Start"><i class="bi bi-play-fill" style="color:var(--info);"></i></button>
+                        </form>
+                        {% elif t.status == 'in-progress' %}
+                        <form method="POST" action="{{ url_for('task_status_update', task_id=t.id) }}" class="d-inline">
+                            <input type="hidden" name="status" value="completed">
+                            <button class="btn btn-ghost btn-sm rounded-circle" title="Complete"><i class="bi bi-check-lg" style="color:var(--success);"></i></button>
+                        </form>
+                        {% endif %}
+                        <a href="{{ url_for('task_edit', task_id=t.id) }}" class="btn btn-ghost btn-sm rounded-circle" title="Edit"><i class="bi bi-pencil"></i></a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<nav class="mt-3 d-flex justify-content-between align-items-center">
+    <small style="color:var(--text-muted);">{{ total_count }} tasks total</small>
+    <ul class="pagination pagination-sm mb-0">
+        {% for p in range(1, total_pages+1) %}
+        <li class="page-item {{ 'active' if p == page }}">
+            <a class="page-link" href="{{ url_for('task_list', page=p, q=search_q, status=status_filter, priority=priority_filter, project=project_filter, sort=sort_by, dir=sort_dir) }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+    </ul>
+</nav>
+{% endif %}
+
+{% else %}
+<div class="glass-card empty-state">
+    <i class="bi bi-inbox"></i>
+    <h4>No tasks found</h4>
+    <p>{% if search_q or status_filter or priority_filter %}Try adjusting your filters.{% else %}Create your first task to get started.{% endif %}</p>
+    <a href="{{ url_for('task_create') }}" class="btn btn-accent btn-sm mt-2">Create Task</a>
+</div>
+{% endif %}
+{% endblock %}

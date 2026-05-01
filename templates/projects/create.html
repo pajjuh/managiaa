@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ 'Edit Project' if editing else 'New Project' }} — Managiaa{% endblock %}
+{% block page_title %}{{ 'Edit Project' if editing else 'Create Project' }}{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-6">
+        <div class="glass-card">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">Project Name *</label>
+                    <input type="text" class="form-control" name="name" value="{{ project.name if project else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-control" name="description" rows="4">{{ project.description if project else '' }}</textarea>
+                </div>
+                {% if editing %}
+                <div class="mb-3">
+                    <label class="form-label">Status</label>
+                    <select class="form-select" name="status">
+                        <option value="active" {{ 'selected' if project.status=='active' }}>Active</option>
+                        <option value="completed" {{ 'selected' if project.status=='completed' }}>Completed</option>
+                        <option value="archived" {{ 'selected' if project.status=='archived' }}>Archived</option>
+                    </select>
+                </div>
+                {% endif %}
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-accent"><i class="bi bi-check-lg me-1"></i>{{ 'Update' if editing else 'Create' }}</button>
+                    <a href="{{ url_for('project_list') }}" class="btn btn-ghost">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
