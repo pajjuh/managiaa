@@ -2,6 +2,33 @@
 {% block title %}Members — Managiaa{% endblock %}
 {% block page_title %}Members{% endblock %}
 {% block content %}
+
+<!-- Add Member Form -->
+<div class="glass-card p-4 mb-4">
+    <h6 style="font-weight:700; margin-bottom:16px;"><i class="bi bi-person-plus me-2"></i>Add New Member</h6>
+    <form method="POST" action="{{ url_for('member_add') }}" class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label" style="font-size:0.8rem;">Full Name</label>
+            <input type="text" name="full_name" class="form-control form-control-sm" placeholder="Full name" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" style="font-size:0.8rem;">Username</label>
+            <input type="text" name="username" class="form-control form-control-sm" placeholder="Username" required>
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" style="font-size:0.8rem;">Email</label>
+            <input type="email" name="email" class="form-control form-control-sm" placeholder="email@company.com" required>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label" style="font-size:0.8rem;">Password</label>
+            <input type="password" name="password" class="form-control form-control-sm" placeholder="Password" required minlength="4">
+        </div>
+        <div class="col-md-2">
+            <button type="submit" class="btn btn-accent btn-sm w-100"><i class="bi bi-plus-lg me-1"></i>Add</button>
+        </div>
+    </form>
+</div>
+
 <div class="table-wrapper">
     <div class="table-responsive">
         <table class="table">
@@ -12,13 +39,14 @@
                 <td style="font-weight:500;">{{ u.full_name }}</td>
                 <td style="color:var(--text-muted);">@{{ u.username }}</td>
                 <td style="font-size:0.85rem;">{{ u.email }}</td>
-                <td><span class="badge bg-{{ 'primary' if u.role=='admin' else 'secondary' }}">{{ u.role|upper }}</span></td>
+                <td><span class="badge bg-{{ 'warning' if u.org_role=='owner' else ('primary' if u.org_role=='admin' else 'secondary') }}">{{ u.org_role|upper }}</span></td>
                 <td style="font-size:0.85rem;">{{ u.completed_tasks }}/{{ u.total_tasks }}</td>
                 <td>
                     <form method="POST" action="{{ url_for('member_role', user_id=u.id) }}" class="d-inline">
                         <select name="role" class="form-select form-select-sm d-inline-block" style="width:auto;" onchange="this.form.submit()">
-                            <option value="user" {{ 'selected' if u.role=='user' }}>User</option>
-                            <option value="admin" {{ 'selected' if u.role=='admin' }}>Admin</option>
+                            <option value="member" {{ 'selected' if u.org_role=='member' }}>Member</option>
+                            <option value="admin" {{ 'selected' if u.org_role=='admin' }}>Admin</option>
+                            <option value="owner" {{ 'selected' if u.org_role=='owner' }}>Owner</option>
                         </select>
                     </form>
                 </td>

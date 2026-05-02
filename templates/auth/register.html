@@ -9,6 +9,10 @@
         </div>
         <form method="POST" action="{{ url_for('register') }}">
             <div class="mb-3">
+                <label class="form-label" for="company_name">Company Name <span style="font-size:0.75rem;color:var(--text-muted);">(optional — leave blank to join later)</span></label>
+                <input type="text" class="form-control" id="company_name" name="company_name" placeholder="Your company or team name">
+            </div>
+            <div class="mb-3">
                 <label class="form-label" for="full_name">Full Name</label>
                 <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Your full name" required>
             </div>

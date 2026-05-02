@@ -23,19 +23,20 @@
     {% block head %}{% endblock %}
 </head>
 <body>
-{% if current_user %}
+{% if current_user and current_org %}
 <!-- Sidebar -->
 <nav id="sidebar" class="sidebar">
     <div class="sidebar-brand">
         <img src="{{ url_for('static', filename='img/m main letter logo.png') }}" alt="M" style="width: 32px; height: 32px; object-fit: contain;">
         <img src="{{ url_for('static', filename='img/managiaa letters logo.png') }}" alt="Managiaa" style="height: 20px; object-fit: contain; margin-left: 8px;">
     </div>
+    <div style="padding: 4px 16px 8px; font-size: 0.65rem; color: var(--accent); font-weight: 700; letter-spacing: 0.5px; opacity:0.8;">{{ current_org.name }}</div>
     <ul class="sidebar-nav">
-        <div style="padding: 16px 16px 8px; font-size: 0.65rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1.5px;">WORKSPACE</div>
+        <div style="padding: 8px 16px 8px; font-size: 0.65rem; color: var(--text-muted); font-weight: 800; letter-spacing: 1.5px;">WORKSPACE</div>
         <li><a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}"><i class="bi bi-grid-1x2-fill"></i><span>Dashboard</span></a></li>
         <li><a href="{{ url_for('task_list') }}" class="{% if 'task' in request.endpoint|default('') %}active{% endif %}"><i class="bi bi-check2-square"></i><span>Tasks</span></a></li>
         <li><a href="{{ url_for('project_list') }}" class="{% if 'project' in request.endpoint|default('') %}active{% endif %}"><i class="bi bi-folder-fill"></i><span>Projects</span></a></li>
-        {% if current_user.role == 'admin' %}
+        {% if current_org.role in ['owner', 'admin'] %}
         <li><a href="{{ url_for('member_list') }}" class="{% if 'member' in request.endpoint|default('') %}active{% endif %}"><i class="bi bi-people-fill"></i><span>Members</span></a></li>
         <li><a href="{{ url_for('audit_log_view') }}" class="{% if request.endpoint == 'audit_log_view' %}active{% endif %}"><i class="bi bi-journal-text"></i><span>Audit Log</span></a></li>
         {% endif %}
@@ -47,7 +48,7 @@
             </div>
             <div style="flex: 1; overflow: hidden;">
                 <div style="font-weight: 600; font-size: 0.85rem; color: var(--text-primary); white-space: nowrap; text-overflow: ellipsis; overflow: hidden;">{{ current_user.full_name }}</div>
-                <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">{{ current_user.role }} PLAN</div>
+                <div style="font-size: 0.65rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700;">{{ current_org.role|upper }}</div>
             </div>
         </div>
         <a href="{{ url_for('logout') }}" class="mt-3 text-secondary" style="font-weight: 600; font-size: 0.85rem;"><i class="bi bi-box-arrow-right"></i><span>Sign Out</span></a>

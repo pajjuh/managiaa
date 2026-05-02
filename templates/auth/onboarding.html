@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Welcome — Managiaa{% endblock %}
+{% block content %}
+<div class="auth-page">
+    <div class="auth-card" style="max-width: 520px;">
+        <div class="auth-logo text-center">
+            <img src="{{ url_for('static', filename='img/full logo.png') }}" alt="Managiaa" style="max-width: 220px; margin-bottom: 20px;">
+            <h4 style="font-weight:700; margin-bottom: 6px;">Welcome, {{ session.get('full_name', 'there') }}!</h4>
+            <p style="color:var(--text-muted); font-size:0.9rem;">You're not part of any organization yet. Create one or join an existing team.</p>
+        </div>
+
+        <form method="POST" action="{{ url_for('onboarding') }}" class="mb-4">
+            <h6 style="font-weight:600; margin-bottom:12px;"><i class="bi bi-building me-2"></i>Create Your Organization</h6>
+            <div class="mb-3">
+                <input type="text" class="form-control" name="company_name" placeholder="Enter your company or team name" required>
+            </div>
+            <button type="submit" class="btn btn-accent w-100">
+                <i class="bi bi-plus-circle me-2"></i>Create Organization
+            </button>
+        </form>
+
+        <hr style="border-color: var(--border-color); margin: 24px 0;">
+
+        <div class="text-center">
+            <h6 style="font-weight:600; margin-bottom:12px;"><i class="bi bi-envelope me-2"></i>Join via Invite</h6>
+            <p style="color:var(--text-muted); font-size:0.85rem;">Ask your team admin to invite you. This feature is coming soon.</p>
+            <input type="text" class="form-control mb-2" placeholder="Enter invite code" disabled>
+            <button class="btn btn-outline-secondary w-100" disabled>Join Organization</button>
+        </div>
+
+        <p class="text-center mt-4" style="font-size:0.85rem;color:var(--text-muted);">
+            <a href="{{ url_for('logout') }}" style="color:var(--accent);">Sign out</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
