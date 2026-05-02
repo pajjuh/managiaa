@@ -1,44 +1,115 @@
 {% extends "base.html" %}
 {% block title %}Register — Managiaa{% endblock %}
 {% block content %}
-<div class="auth-page">
-    <div class="auth-card">
-        <div class="auth-logo text-center">
-            <img src="{{ url_for('static', filename='img/full logo.png') }}" alt="Managiaa" style="max-width: 220px; margin-bottom: 20px;">
-            <p>Create your account</p>
+<div class="split-auth-layout">
+    <div class="split-auth-left">
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 60px;">
+                <img src="{{ url_for('static', filename='img/m main letter logo.png') }}" alt="M" style="width: 40px;">
+                <h2 style="margin: 0; font-weight: 800; font-size: 1.8rem; color: white;">Managiaa</h2>
+            </div>
+            
+            <h1 style="font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 24px;">Simplify your<br><span style="color: #6c5ce7;">complex</span> projects.</h1>
+            <p style="font-size: 1.2rem; color: #a0aec0; line-height: 1.6; max-width: 480px;">The all-in-one workspace for teams to track progress, manage tasks, and reach milestones faster.</p>
+            
+            <ul class="auth-feature-list">
+                <li class="auth-feature-item">
+                    <div class="auth-feature-icon" style="border-color: #00b894; color: #00b894;"><i class="bi bi-check2"></i></div>
+                    Advanced workload distribution & tracking
+                </li>
+                <li class="auth-feature-item">
+                    <div class="auth-feature-icon" style="border-color: #00b894; color: #00b894;"><i class="bi bi-check2"></i></div>
+                    Collaborative team-based environments
+                </li>
+                <li class="auth-feature-item">
+                    <div class="auth-feature-icon" style="border-color: #00b894; color: #00b894;"><i class="bi bi-check2"></i></div>
+                    Real-time performance analytics
+                </li>
+            </ul>
         </div>
-        <form method="POST" action="{{ url_for('register') }}">
-            <div class="mb-3">
-                <label class="form-label" for="company_name">Company Name <span style="font-size:0.75rem;color:var(--text-muted);">(optional — leave blank to join later)</span></label>
-                <input type="text" class="form-control" id="company_name" name="company_name" placeholder="Your company or team name">
+        
+        <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; font-weight: 700; margin-bottom: 16px;">TRUSTED BY INNOVATIVE TEAMS</p>
+            <div style="display: flex; gap: 32px; align-items: center; opacity: 0.7;">
+                <div style="font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;"><i class="bi bi-globe"></i> TechFlow</div>
+                <div style="font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;"><i class="bi bi-git"></i> CodeBase</div>
             </div>
-            <div class="mb-3">
-                <label class="form-label" for="full_name">Full Name</label>
-                <input type="text" class="form-control" id="full_name" name="full_name" placeholder="Your full name" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Choose a username" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="email">Email</label>
-                <input type="email" class="form-control" id="email" name="email" placeholder="your@email.com" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label" for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Min 4 characters" required minlength="4">
-            </div>
-            <div class="mb-4">
-                <label class="form-label" for="confirm_password">Confirm Password</label>
-                <input type="password" class="form-control" id="confirm_password" name="confirm_password" placeholder="Repeat password" required>
-            </div>
-            <button type="submit" class="btn btn-accent w-100 mb-3">
-                <i class="bi bi-person-plus me-2"></i>Create Account
-            </button>
-        </form>
-        <p class="text-center mt-3" style="font-size:0.85rem;color:var(--text-muted);">
-            Already have an account? <a href="{{ url_for('login') }}" style="color:var(--accent);">Sign In</a>
-        </p>
+        </div>
+    </div>
+    
+    <div class="split-auth-right">
+        <div class="split-auth-form-container">
+            <h2 style="font-weight: 800; font-size: 2.2rem; margin-bottom: 8px; color: var(--text-primary);">Create your account</h2>
+            <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 40px;">Join us to manage smarter.</p>
+            
+            <form method="POST" action="{{ url_for('register') }}">
+                <div class="mb-3">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label class="form-label mb-0" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">Company Name</label>
+                        <span style="font-size: 0.7rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase;">OPTIONAL</span>
+                    </div>
+                    <div style="position: relative; margin-top: 8px;">
+                        <i class="bi bi-building position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" class="form-control" name="company_name" placeholder="e.g. Acme Corp" style="padding-left: 44px; padding-top: 12px; padding-bottom: 12px; border-radius: 12px; background: var(--bg-primary); border-color: transparent; color: var(--text-primary);">
+                    </div>
+                </div>
+                
+                <div class="row gx-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">Full Name</label>
+                        <div style="position: relative; margin-top: 4px;">
+                            <i class="bi bi-person position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                            <input type="text" class="form-control" name="full_name" placeholder="John Doe" required style="padding-left: 44px; padding-top: 12px; padding-bottom: 12px; border-radius: 12px; background: var(--bg-primary); border-color: transparent; color: var(--text-primary);">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3 mt-md-0">
+                        <label class="form-label" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">Username</label>
+                        <div style="position: relative; margin-top: 4px;">
+                            <i class="bi bi-at position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                            <input type="text" class="form-control" name="username" placeholder="johndoe" required style="padding-left: 44px; padding-top: 12px; padding-bottom: 12px; border-radius: 12px; background: var(--bg-primary); border-color: transparent; color: var(--text-primary);">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">Email Address</label>
+                    <div style="position: relative; margin-top: 4px;">
+                        <i class="bi bi-envelope position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="email" class="form-control" name="email" placeholder="your@email.com" required style="padding-left: 44px; padding-top: 12px; padding-bottom: 12px; border-radius: 12px; background: var(--bg-primary); border-color: transparent; color: var(--text-primary);">
+                    </div>
+                </div>
+                
+                <div class="row gx-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">Password</label>
+                        <div style="position: relative; margin-top: 4px;">
+                            <i class="bi bi-lock position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                            <input type="password" class="form-control" name="password" placeholder="••••••••" required minlength="4" style="padding-left: 44px; padding-top: 12px; padding-bottom: 12px; border-radius: 12px; background: var(--bg-primary); border-color: transparent; color: var(--text-primary);">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mt-3 mt-md-0">
+                        <label class="form-label" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">Confirm Password</label>
+                        <div style="position: relative; margin-top: 4px;">
+                            <i class="bi bi-lock position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                            <input type="password" class="form-control" name="confirm_password" placeholder="••••••••" required style="padding-left: 44px; padding-top: 12px; padding-bottom: 12px; border-radius: 12px; background: var(--bg-primary); border-color: transparent; color: var(--text-primary);">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-4 form-check d-flex align-items-start">
+                    <input type="checkbox" class="form-check-input mt-1" id="terms" required style="width: 16px; height: 16px; border-radius: 4px; border-color: var(--border);">
+                    <label class="form-check-label ms-2" for="terms" style="font-size: 0.8rem; color: var(--text-secondary); line-height: 1.4;">By creating an account, you agree to our <a href="#" style="color: var(--accent); font-weight: 600; text-decoration: none;">Terms of Service</a> and <a href="#" style="color: var(--accent); font-weight: 600; text-decoration: none;">Privacy Policy</a>.</label>
+                </div>
+                
+                <button type="submit" class="btn btn-accent w-100" style="padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; margin-top: 8px; box-shadow: 0 4px 14px var(--accent-glow);">
+                    CREATE ACCOUNT <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+            </form>
+            
+            <p class="text-center mt-4" style="font-size:0.95rem; font-weight: 600; color:var(--text-secondary);">
+                Already have an account? <a href="{{ url_for('login') }}" style="color:var(--accent); text-decoration: none;">Sign In</a>
+            </p>
+        </div>
     </div>
 </div>
 {% endblock %}

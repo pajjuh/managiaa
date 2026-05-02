@@ -463,3 +463,72 @@ body {
 @media (min-width: 769px) {
     .sidebar-toggle { display: none !important; }
 }
+
+/* ============================================
+   SPLIT AUTH LAYOUT (Login/Register)
+   ============================================ */
+.split-auth-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100vw;
+}
+
+.split-auth-left {
+    flex: 1;
+    background: #0f111a;
+    padding: 60px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: white;
+}
+
+.split-auth-right {
+    flex: 1;
+    background: var(--bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+}
+
+.split-auth-form-container {
+    width: 100%;
+    max-width: 480px;
+}
+
+.auth-feature-list {
+    margin-top: 40px;
+    list-style: none;
+    padding: 0;
+}
+
+.auth-feature-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+    font-size: 1.05rem;
+    font-weight: 600;
+}
+
+.auth-feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid #00b894;
+    color: #00b894;
+    font-size: 0.8rem;
+}
+
+@media (max-width: 992px) {
+    .split-auth-layout {
+        flex-direction: column;
+    }
+    .split-auth-left {
+        padding: 40px 24px;
+    }
+}

@@ -1,28 +1,92 @@
 {% extends "base.html" %}
 {% block title %}Login — Managiaa{% endblock %}
 {% block content %}
-<div class="auth-page">
-    <div class="auth-card">
-        <div class="auth-logo text-center">
-            <img src="{{ url_for('static', filename='img/full logo.png') }}" alt="Managiaa" style="max-width: 220px; margin-bottom: 20px;">
-            <p>Sign in to your workspace</p>
+<div class="split-auth-layout">
+    <div class="split-auth-left">
+        <div>
+            <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 60px;">
+                <img src="{{ url_for('static', filename='img/m main letter logo.png') }}" alt="M" style="width: 40px;">
+                <h2 style="margin: 0; font-weight: 800; font-size: 1.8rem; color: white;">Managiaa</h2>
+            </div>
+            
+            <h1 style="font-size: 3.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 24px;">Welcome <span style="color: #6c5ce7;">back</span> to<br>the workspace.</h1>
+            <p style="font-size: 1.2rem; color: #a0aec0; line-height: 1.6; max-width: 480px;">Pick up right where you left off. Manage your projects, track your team, and hit those deadlines.</p>
+            
+            <ul class="auth-feature-list">
+                <li class="auth-feature-item">
+                    <div class="auth-feature-icon" style="border-color: #5c4bdf; color: #5c4bdf;"><i class="bi bi-check2"></i></div>
+                    Sync across all your devices
+                </li>
+                <li class="auth-feature-item">
+                    <div class="auth-feature-icon" style="border-color: #5c4bdf; color: #5c4bdf;"><i class="bi bi-check2"></i></div>
+                    Encrypted and secure data
+                </li>
+                <li class="auth-feature-item">
+                    <div class="auth-feature-icon" style="border-color: #5c4bdf; color: #5c4bdf;"><i class="bi bi-check2"></i></div>
+                    24/7 Priority support access
+                </li>
+            </ul>
         </div>
-        <form method="POST" action="{{ url_for('login') }}">
-            <div class="mb-3">
-                <label class="form-label" for="username">Username</label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required autofocus>
+        
+        <div style="margin-top: 60px; padding-top: 30px; border-top: 1px solid rgba(255,255,255,0.1);">
+            <p style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1.5px; color: #64748b; font-weight: 700; margin-bottom: 16px;">GLOBAL OPERATIONS</p>
+            <div style="display: flex; gap: 32px; align-items: center; opacity: 0.7;">
+                <div style="font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;"><i class="bi bi-globe"></i> TechFlow</div>
+                <div style="font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 8px;"><i class="bi bi-git"></i> CodeBase</div>
             </div>
-            <div class="mb-4">
-                <label class="form-label" for="password">Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
-            </div>
-            <button type="submit" class="btn btn-accent w-100 mb-3">
-                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+        </div>
+    </div>
+    
+    <div class="split-auth-right">
+        <div class="split-auth-form-container">
+            <h2 style="font-weight: 800; font-size: 2.2rem; margin-bottom: 8px; color: var(--text-primary);">Sign in</h2>
+            <p style="color: var(--text-muted); font-size: 1.05rem; margin-bottom: 40px;">Enter your credentials to access your dashboard.</p>
+            
+            <button class="btn w-100 mb-4" style="background: transparent; border: 1px solid var(--border); border-radius: 12px; padding: 12px; font-weight: 600; color: var(--text-primary); display: flex; align-items: center; justify-content: center; gap: 12px;">
+                <i class="bi bi-google text-danger"></i> Sign in with Google
             </button>
-        </form>
-        <p class="text-center mt-3" style="font-size:0.85rem;color:var(--text-muted);">
-            Don't have an account? <a href="{{ url_for('register') }}" style="color:var(--accent);">Register</a>
-        </p>
+            
+            <div style="display: flex; align-items: center; text-align: center; color: var(--text-muted); font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; margin-bottom: 24px;">
+                <div style="flex: 1; height: 1px; background: var(--border);"></div>
+                <span style="padding: 0 16px;">OR CONTINUE WITH</span>
+                <div style="flex: 1; height: 1px; background: var(--border);"></div>
+            </div>
+            
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="mb-4">
+                    <label class="form-label" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">Username or Email</label>
+                    <div style="position: relative;">
+                        <i class="bi bi-person position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="text" class="form-control" name="username" placeholder="johndoe@example.com" required style="padding-left: 44px; padding-top: 12px; padding-bottom: 12px; border-radius: 12px; background: var(--bg-primary); border-color: transparent;">
+                    </div>
+                </div>
+                
+                <div class="mb-4">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <label class="form-label mb-0" style="font-size: 0.75rem; font-weight: 700; letter-spacing: 1px; color: var(--text-muted); text-transform: uppercase;">Password</label>
+                        <a href="#" style="font-size: 0.75rem; font-weight: 700; text-decoration: none; color: var(--accent);">FORGOT?</a>
+                    </div>
+                    <div style="position: relative; margin-top: 8px;">
+                        <i class="bi bi-lock position-absolute" style="left: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted);"></i>
+                        <input type="password" class="form-control" name="password" placeholder="••••••••" required style="padding-left: 44px; padding-top: 12px; padding-bottom: 12px; border-radius: 12px; background: var(--bg-primary); border-color: transparent;">
+                        <i class="bi bi-eye position-absolute" style="right: 16px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer;"></i>
+                    </div>
+                </div>
+                
+                <div class="mb-4 form-check d-flex align-items-center">
+                    <input type="checkbox" class="form-check-input" id="remember" style="width: 18px; height: 18px; margin-top: 0; border-radius: 4px; border-color: var(--border);">
+                    <label class="form-check-label ms-2" for="remember" style="font-size: 0.9rem; color: var(--text-secondary);">Remember me for 30 days</label>
+                </div>
+                
+                <button type="submit" class="btn btn-accent w-100" style="padding: 14px; border-radius: 12px; font-weight: 700; font-size: 1rem; margin-top: 8px; box-shadow: 0 4px 14px var(--accent-glow);">
+                    SIGN IN <i class="bi bi-arrow-right ms-2"></i>
+                </button>
+            </form>
+            
+            <p class="text-center mt-4" style="font-size:0.95rem; font-weight: 600; color:var(--text-secondary);">
+                Don't have an account? <a href="{{ url_for('register') }}" style="color:var(--accent); text-decoration: none;">Create one now</a>
+            </p>
+        </div>
     </div>
 </div>
 {% endblock %}
