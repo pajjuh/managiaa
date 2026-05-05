@@ -9,6 +9,7 @@
             <p style="color:var(--text-muted); font-size:0.9rem;">You're not part of any organization yet. Create one or join an existing team.</p>
         </div>
 
+        <!-- Create Organization -->
         <form method="POST" action="{{ url_for('onboarding') }}" class="mb-4">
             <h6 style="font-weight:600; margin-bottom:12px;"><i class="bi bi-building me-2"></i>Create Your Organization</h6>
             <div class="mb-3">
@@ -19,14 +20,20 @@
             </button>
         </form>
 
-        <hr style="border-color: var(--border-color); margin: 24px 0;">
+        <hr style="border-color: var(--border); margin: 24px 0;">
 
-        <div class="text-center">
-            <h6 style="font-weight:600; margin-bottom:12px;"><i class="bi bi-envelope me-2"></i>Join via Invite</h6>
-            <p style="color:var(--text-muted); font-size:0.85rem;">Ask your team admin to invite you. This feature is coming soon.</p>
-            <input type="text" class="form-control mb-2" placeholder="Enter invite code" disabled>
-            <button class="btn btn-outline-secondary w-100" disabled>Join Organization</button>
-        </div>
+        <!-- Join via Invite Code -->
+        <form method="POST" action="{{ url_for('join_invite') }}">
+            <h6 style="font-weight:600; margin-bottom:12px; text-align:center;"><i class="bi bi-link-45deg me-2"></i>Join via Invite Code</h6>
+            <p style="color:var(--text-muted); font-size:0.85rem; text-align:center; margin-bottom:16px;">Got an invite code from your team admin? Enter it below to join their workspace.</p>
+            <div class="mb-3">
+                <input type="text" class="form-control text-center" name="invite_code" placeholder="Enter 8-character invite code" maxlength="8"
+                       style="font-size: 1.2rem; letter-spacing: 3px; font-weight: 700; text-transform: uppercase; padding: 14px;">
+            </div>
+            <button type="submit" class="btn btn-accent w-100" style="background: transparent; border: 2px solid var(--accent); color: var(--accent);">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Join Organization
+            </button>
+        </form>
 
         <p class="text-center mt-4" style="font-size:0.85rem;color:var(--text-muted);">
             <a href="{{ url_for('logout') }}" style="color:var(--accent);">Sign out</a>

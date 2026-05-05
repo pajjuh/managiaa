@@ -1,6 +1,7 @@
 import os
 import re
-from datetime import datetime
+import secrets
+from datetime import datetime, timedelta
 from functools import wraps
 
 from dotenv import load_dotenv
@@ -664,7 +665,18 @@ def member_list():
         u_tasks = [t for t in tasks if t.get('assigned_to') == u['id']]
         u['total_tasks'] = len(u_tasks)
         u['completed_tasks'] = len([t for t in u_tasks if t['status'] == 'completed'])
-    return render_template('members/list.html', users=all_users)
+    # Get active invites for this org
+    invites = supabase.table('invitations').select('*').eq('organization_id', session['active_org_id']).order('created_at', desc=True).execute().data or []
+    # Get creator names
+    creator_ids = list(set(i['created_by'] for i in invites))
+    if creator_ids:
+        creators = supabase.table('users').select('id, full_name').in_('id', creator_ids).execute().data or []
+        creator_map = {c['id']: c['full_name'] for c in creators}
+    else:
+        creator_map = {}
+    for inv in invites:
+        inv['creator_name'] = creator_map.get(inv['created_by'], 'Unknown')
+    return render_template('members/list.html', users=all_users, invites=invites)
 
 
 @app.route('/members/<int:user_id>/role', methods=['POST'])
@@ -712,6 +724,103 @@ def member_add():
     }).execute()
     flash(f'Member {full_name} added!', 'success')
     return redirect(url_for('member_list'))
+
+
+@app.route('/invites/generate', methods=['POST'])
+@org_admin_required
+def invite_generate():
+    """Generate a new invite code for the current org."""
+    expiry_hours = int(request.form.get('expiry', '24'))
+    max_uses = int(request.form.get('max_uses', '1'))
+    invite_role = request.form.get('invite_role', 'member')
+    if invite_role not in ('member', 'admin'):
+        invite_role = 'member'
+    if max_uses < 1:
+        max_uses = 1
+    if max_uses > 100:
+        max_uses = 100
+    # Generate unique 8-char code
+    code = secrets.token_urlsafe(6)[:8].upper()
+    # Ensure unique
+    while supabase.table('invitations').select('id').eq('code', code).execute().data:
+        code = secrets.token_urlsafe(6)[:8].upper()
+    expires_at = (datetime.utcnow() + timedelta(hours=expiry_hours)).isoformat()
+    supabase.table('invitations').insert({
+        'organization_id': session['active_org_id'],
+        'code': code,
+        'role': invite_role,
+        'created_by': session['user_id'],
+        'max_uses': max_uses,
+        'uses': 0,
+        'expires_at': expires_at
+    }).execute()
+    log_audit(session['user_id'], 'generated_invite', 'invitation', None,
+              f'Code: {code}, Expires: {expiry_hours}h, Max Uses: {max_uses}')
+    flash(f'Invite code generated: {code}', 'success')
+    return redirect(url_for('member_list'))
+
+
+@app.route('/invites/<int:invite_id>/delete', methods=['POST'])
+@org_admin_required
+def invite_delete(invite_id):
+    """Delete/revoke an invite code."""
+    invite = supabase.table('invitations').select('organization_id, code').eq('id', invite_id).execute().data
+    if not invite or invite[0]['organization_id'] != session['active_org_id']:
+        flash('Invite not found.', 'danger')
+        return redirect(url_for('member_list'))
+    supabase.table('invitations').delete().eq('id', invite_id).execute()
+    log_audit(session['user_id'], 'revoked_invite', 'invitation', invite_id,
+              f'Revoked code: {invite[0]["code"]}')
+    flash('Invite code revoked.', 'info')
+    return redirect(url_for('member_list'))
+
+
+@app.route('/join-invite', methods=['POST'])
+@login_required
+def join_invite():
+    """Join an organization via invite code (from onboarding page)."""
+    code = request.form.get('invite_code', '').strip().upper()
+    if not code:
+        flash('Please enter an invite code.', 'danger')
+        return redirect(url_for('onboarding'))
+    # Look up the invite
+    invite_res = supabase.table('invitations').select('*').eq('code', code).execute().data
+    if not invite_res:
+        flash('Invalid invite code.', 'danger')
+        return redirect(url_for('onboarding'))
+    invite = invite_res[0]
+    # Check expiry
+    expires_at = datetime.fromisoformat(invite['expires_at'].replace('Z', '+00:00'))
+    if datetime.now(expires_at.tzinfo) > expires_at:
+        flash('This invite code has expired.', 'danger')
+        return redirect(url_for('onboarding'))
+    # Check uses
+    if invite['uses'] >= invite['max_uses']:
+        flash('This invite code has reached its usage limit.', 'danger')
+        return redirect(url_for('onboarding'))
+    # Check if user already in this org
+    org_id = invite['organization_id']
+    existing = supabase.table('memberships').select('id').eq('user_id', session['user_id']).eq('organization_id', org_id).execute().data
+    if existing:
+        flash('You are already a member of this organization.', 'warning')
+        return redirect(url_for('onboarding'))
+    # Join the org
+    supabase.table('memberships').insert({
+        'user_id': session['user_id'],
+        'organization_id': org_id,
+        'role': invite['role']
+    }).execute()
+    # Increment uses
+    supabase.table('invitations').update({'uses': invite['uses'] + 1}).eq('id', invite['id']).execute()
+    # Set session
+    org = supabase.table('organizations').select('name').eq('id', org_id).execute().data
+    session['active_org_id'] = org_id
+    session['org_role'] = invite['role']
+    session['org_name'] = org[0]['name'] if org else ''
+    log_audit(session['user_id'], 'joined_via_invite', 'organization', org_id,
+              f'Joined using code: {code}')
+    flash(f'Welcome to {session["org_name"]}!', 'success')
+    return redirect(url_for('dashboard'))
 
 
 @app.route('/profile', methods=['GET', 'POST'])

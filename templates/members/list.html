@@ -3,6 +3,96 @@
 {% block page_title %}Members{% endblock %}
 {% block content %}
 
+<!-- Invite Code Generator -->
+<div class="glass-card p-4 mb-4">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h6 style="font-weight:700; margin:0;"><i class="bi bi-link-45deg me-2"></i>Invite Codes</h6>
+        <button class="btn btn-accent btn-sm" type="button" data-bs-toggle="collapse" data-bs-target="#invite-form" aria-expanded="false">
+            <i class="bi bi-plus-lg me-1"></i>Generate Code
+        </button>
+    </div>
+    
+    <div class="collapse mb-3" id="invite-form">
+        <form method="POST" action="{{ url_for('invite_generate') }}" class="row g-3 align-items-end p-3" style="background: var(--bg-primary); border-radius: 12px;">
+            <div class="col-md-3">
+                <label class="form-label" style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted);">Expires In</label>
+                <select name="expiry" class="form-select form-select-sm" style="background: var(--bg-card); border-color: var(--border); color: var(--text-primary);">
+                    <option value="1">1 Hour</option>
+                    <option value="24" selected>24 Hours</option>
+                    <option value="168">7 Days</option>
+                    <option value="720">30 Days</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted);">Max Uses</label>
+                <select name="max_uses" class="form-select form-select-sm" style="background: var(--bg-card); border-color: var(--border); color: var(--text-primary);">
+                    <option value="1">1 use</option>
+                    <option value="5">5 uses</option>
+                    <option value="10" selected>10 uses</option>
+                    <option value="25">25 uses</option>
+                    <option value="50">50 uses</option>
+                    <option value="100">Unlimited (100)</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label" style="font-size:0.75rem; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; color:var(--text-muted);">Role</label>
+                <select name="invite_role" class="form-select form-select-sm" style="background: var(--bg-card); border-color: var(--border); color: var(--text-primary);">
+                    <option value="member" selected>Member</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn btn-accent btn-sm w-100"><i class="bi bi-key me-1"></i>Generate</button>
+            </div>
+        </form>
+    </div>
+    
+    {% if invites %}
+    <div class="table-responsive" style="max-height: 260px; overflow-y: auto;">
+        <table class="table mb-0" style="font-size: 0.85rem;">
+            <thead><tr>
+                <th style="padding: 8px 12px;">Code</th>
+                <th style="padding: 8px 12px;">Role</th>
+                <th style="padding: 8px 12px;">Uses</th>
+                <th style="padding: 8px 12px;">Expires</th>
+                <th style="padding: 8px 12px;">Created By</th>
+                <th style="padding: 8px 12px;">Actions</th>
+            </tr></thead>
+            <tbody>
+            {% for inv in invites %}
+            {% set expired = inv.expires_at < now.strftime('%Y-%m-%dT%H:%M:%S') %}
+            {% set used_up = inv.uses >= inv.max_uses %}
+            <tr style="{{ 'opacity: 0.5;' if expired or used_up else '' }}">
+                <td style="padding: 8px 12px;">
+                    <code style="background: rgba(92,75,223,0.15); color: var(--accent); padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.9rem; letter-spacing: 1px;" onclick="navigator.clipboard.writeText('{{ inv.code }}'); this.style.outline='2px solid var(--success)'; setTimeout(()=>this.style.outline='none', 1000);" title="Click to copy" class="d-inline-block" style="cursor: pointer;">{{ inv.code }}</code>
+                </td>
+                <td style="padding: 8px 12px;"><span class="badge bg-{{ 'primary' if inv.role == 'admin' else 'secondary' }}">{{ inv.role|upper }}</span></td>
+                <td style="padding: 8px 12px;">{{ inv.uses }}/{{ inv.max_uses }}</td>
+                <td style="padding: 8px 12px;">
+                    {% if expired %}
+                    <span class="text-danger"><i class="bi bi-x-circle me-1"></i>Expired</span>
+                    {% else %}
+                    <span style="color: var(--success);"><i class="bi bi-clock me-1"></i>{{ inv.expires_at[:16].replace('T', ' ') }}</span>
+                    {% endif %}
+                </td>
+                <td style="padding: 8px 12px; color: var(--text-muted);">{{ inv.creator_name }}</td>
+                <td style="padding: 8px 12px;">
+                    <form method="POST" action="{{ url_for('invite_delete', invite_id=inv.id) }}" class="d-inline">
+                        <button type="submit" class="btn btn-outline-danger btn-sm" style="padding: 2px 8px; font-size: 0.75rem;" onclick="return confirm('Revoke this invite code?')">
+                            <i class="bi bi-trash3"></i>
+                        </button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--text-muted); font-size: 0.85rem; margin: 0;">No invite codes yet. Generate one to invite team members.</p>
+    {% endif %}
+</div>
+
 <!-- Add Member Form -->
 <div class="glass-card p-4 mb-4">
     <h6 style="font-weight:700; margin-bottom:16px;"><i class="bi bi-person-plus me-2"></i>Add New Member</h6>
