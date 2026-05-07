@@ -1,5 +1,5 @@
 # Managiaa 🚀
-
+TRY HERE - [CLICK HERE](https://managiaa.onrender.com/)
 **Managiaa** is a premium, high-performance Task and Project Management system designed for modern teams. Built with a focus on visual excellence and intuitive user experience, it combines powerful backend logic with a stunning glassmorphic UI.
 
 ![Dashboard Preview](static/img/full%20logo.png)
