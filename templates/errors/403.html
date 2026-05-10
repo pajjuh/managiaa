@@ -1,13 +1,13 @@
 {% extends "base.html" %}
-{% block title %}404 — Page Not Found — Managiaa{% endblock %}
+{% block title %}403 — Access Denied — Managiaa{% endblock %}
 {% block content %}
 <div class="auth-page">
     <div class="auth-card text-center" style="max-width: 520px; padding: 60px 40px;">
         <div style="margin-bottom: 32px;">
-            <div style="font-size: 8rem; font-weight: 900; line-height: 1; background: linear-gradient(135deg, var(--accent), #a78bfa); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -4px;">404</div>
+            <div style="font-size: 8rem; font-weight: 900; line-height: 1; background: linear-gradient(135deg, #f59e0b, #eab308); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -4px;">403</div>
         </div>
-        <h2 style="font-weight: 800; font-size: 1.6rem; margin-bottom: 12px; color: var(--text-primary);">Page not found</h2>
-        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 32px;">The page you're looking for doesn't exist or has been moved. Let's get you back on track.</p>
+        <h2 style="font-weight: 800; font-size: 1.6rem; margin-bottom: 12px; color: var(--text-primary);">Access denied</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 32px;">You don't have permission to access this resource. If you believe this is a mistake, contact your organization admin.</p>
         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
             <a href="{{ url_for('dashboard') }}" class="btn btn-accent" style="padding: 12px 28px; border-radius: 12px; font-weight: 700;">
                 <i class="bi bi-house me-2"></i>Dashboard

@@ -1,11 +1,21 @@
 {% extends "base.html" %}
-{% block title %}500 — Managiaa{% endblock %}
+{% block title %}500 — Server Error — Managiaa{% endblock %}
 {% block content %}
 <div class="auth-page">
-    <div class="auth-card text-center">
-        <h1 style="font-size:5rem;font-weight:800;color:var(--danger);">500</h1>
-        <p style="color:var(--text-muted);">Something went wrong</p>
-        <a href="{{ url_for('dashboard') }}" class="btn btn-accent mt-3">Back to Dashboard</a>
+    <div class="auth-card text-center" style="max-width: 520px; padding: 60px 40px;">
+        <div style="margin-bottom: 32px;">
+            <div style="font-size: 8rem; font-weight: 900; line-height: 1; background: linear-gradient(135deg, #ef4444, #f97316); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: -4px;">500</div>
+        </div>
+        <h2 style="font-weight: 800; font-size: 1.6rem; margin-bottom: 12px; color: var(--text-primary);">Something went wrong</h2>
+        <p style="color: var(--text-muted); font-size: 0.95rem; line-height: 1.6; margin-bottom: 32px;">Our server encountered an unexpected error. Don't worry — our team has been notified. Please try again in a moment.</p>
+        <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('dashboard') }}" class="btn btn-accent" style="padding: 12px 28px; border-radius: 12px; font-weight: 700;">
+                <i class="bi bi-house me-2"></i>Dashboard
+            </a>
+            <a href="javascript:location.reload()" class="btn" style="padding: 12px 28px; border-radius: 12px; font-weight: 700; border: 1px solid var(--border); color: var(--text-secondary);">
+                <i class="bi bi-arrow-clockwise me-2"></i>Retry
+            </a>
+        </div>
     </div>
 </div>
 {% endblock %}
